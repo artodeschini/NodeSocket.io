@@ -6,19 +6,12 @@ let http = require('http').createServer(app);
 let io = require('socket.io')(http);
 
 io.on('connection', (socket) => {
-    //console.log(socket);
-    //console.log(socket.id);
-    socket.on('boasvindas', (data) => {
-        console.log('executando boas vindas');
-        console.log(data);
-    });
-
-    socket.on('palavra', (data) => {
-        console.log('executando palavra');
-        console.log(data);
-
-        // respondendo do servidor para o cliente
-        socket.emit('resultado', data + ' resposta enviada em ' + new Date());
+    
+    socket.on("msg", (data) => {
+        //console.log(data);
+        // com o socket resposta individual
+        // com io globais funciona como um broadcast
+        io.emit('showmsg', data);
     });
 });
 

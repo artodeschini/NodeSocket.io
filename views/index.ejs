@@ -4,48 +4,69 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Socket</title>
+    <title>Chat com Web Socket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        #chat {
+            max-height: 300px;
+            min-height: 300px;
+            background-color: aliceblue;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>Envio de mensagens com Web Socket</h1>
-    <label for="texto">Texto:</label>
-    <br>
-    <input type="text" id="texto" name="texto" /> 
-    <br>
-    <button onclick="enviar();">Enviar</button>
-    <br>
-    <label for="resultado">Resultado:</label>
-    <span id="resultado">
-       
-    </span>
+    <div class="container">
+        <br>
+        <div class="card">
+            <div class="card-header">
+                <h2>Exemplo de Chat com WebSocket / NodeJS Socket.io</h2>
+            </div>
+            <div class="card-body">
+                <div id="chat">
+
+                </div>
+                <br>
+                <label for="msg">Mensagem:</label>
+                <br>
+                <textarea id="msg" name="msg" placeholder="Digite uma mensagem" class="form-control"></textarea>
+                <br>
+                <label for="nome">Nome:</label>
+                <br>
+                <input type="text" name="nome" id="nome" placeholder="Digite seu nome" class="form-control">
+                <br>
+                <button class="btn btn-success" onclick="enviar();">Enviar</button>
+            </div>
+    </div>
 </body>
 <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
 <script>
     let socket = io('http://localhost:8080');
 
-    // envia uma msg ao servidor
-    socket.emit('boasvindas', {nome: 'Artur Todeschini'});
-
-    socket.on('resultado', (data) => {
-        console.log(data);
-        let span = document.getElementById('resultado');
-        let p = document.createElement('p');
-        p.innerHTML = data;
-        span.appendChild(p);
-    });
 
     // evento de desconexao com o servidor
     socket.on('disconnect', () => {
         console.log(socket.id + ' se desconectou');
     });
-    
-    // evento do cliente para o servidor
+
+    socket.on('showmsg', (data) => {
+        //console.log(data);
+        let chat = document.getElementById('chat');
+        let p = document.createElement('p');
+        p.innerHTML = `${data.username}: ${data.msg}`; 
+        
+        chat.appendChild(p);
+    }); 
+
     function enviar() {
-        let texto = document.getElementById('texto').value;
-        console.log(texto);
-        socket.emit('palavra', texto);
+        let username = document.getElementById('nome');
+        let msg = document.getElementById('msg');
+
+        socket.emit("msg", {'msg': msg.value, 'username': username.value});
     }
 
-
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 </html>
