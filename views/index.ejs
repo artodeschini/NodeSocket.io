@@ -4,9 +4,48 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Web Socket</title>
 </head>
 <body>
-    <h1>It's works</h1>
+    <h1>Envio de mensagens com Web Socket</h1>
+    <label for="texto">Texto:</label>
+    <br>
+    <input type="text" id="texto" name="texto" /> 
+    <br>
+    <button onclick="enviar();">Enviar</button>
+    <br>
+    <label for="resultado">Resultado:</label>
+    <span id="resultado">
+       
+    </span>
 </body>
+<script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+<script>
+    let socket = io('http://localhost:8080');
+
+    // envia uma msg ao servidor
+    socket.emit('boasvindas', {nome: 'Artur Todeschini'});
+
+    socket.on('resultado', (data) => {
+        console.log(data);
+        let span = document.getElementById('resultado');
+        let p = document.createElement('p');
+        p.innerHTML = data;
+        span.appendChild(p);
+    });
+
+    // evento de desconexao com o servidor
+    socket.on('disconnect', () => {
+        console.log(socket.id + ' se desconectou');
+    });
+    
+    // evento do cliente para o servidor
+    function enviar() {
+        let texto = document.getElementById('texto').value;
+        console.log(texto);
+        socket.emit('palavra', texto);
+    }
+
+
+</script>
 </html>
